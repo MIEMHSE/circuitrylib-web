@@ -33,6 +33,10 @@ Ext.onReady(function () {
                 name: 'signals',
                 type: 'string',
                 mapping: 'info.mandatory_signals'
+            },
+            {
+                name: 'constraints',
+                mapping: 'info.constraints'
             }
         ]
     });
@@ -42,7 +46,7 @@ Ext.onReady(function () {
         model: 'circuitrylibModel',
         proxy: {
             type: 'ajax',
-            url: '/describe/',
+            url: '/description.json',
             reader: {
                 type: 'json',
                 root: 'adapters'
@@ -57,14 +61,16 @@ Ext.onReady(function () {
         model: 'circuitrylibModel',
         proxy: {
             type: 'ajax',
-            url: '/describe/',
+            url: '/description.json',
             reader: {
                 type: 'json',
                 root: 'devices'
             }
         },
         autoLoad: true,
-        storeId: 'devicesStore'
+        storeId: 'devicesStore',
+        sortOnLoad: true,
+        sorters: { property: 'libname', direction : 'ASC' }
     });
 
     // Main common toolbar menu
