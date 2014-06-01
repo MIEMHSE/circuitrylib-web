@@ -37,6 +37,10 @@ Ext.onReady(function () {
             {
                 name: 'constraints',
                 mapping: 'info.constraints'
+            },
+            {
+                name: 'contenttype',
+                mapping: 'info.default_content_type'
             }
         ]
     });

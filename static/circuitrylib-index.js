@@ -120,7 +120,95 @@ Ext.onReady(function () {
     var goButton = Ext.create('Ext.button.Button', {
         text: 'Обработка',
         handler: function () {
-            Ext.MessageBox.alert('CircuitryLib', 'Необходимо выбрать устройство из списка.');
+            if (!indexPanel.getSelectionModel().hasSelection()) {
+                Ext.MessageBox.alert('CircuitryLib', 'Необходимо выбрать устройство из списка.');
+                return;
+            }
+            if (!adaptersCombobox.value) {
+                Ext.MessageBox.alert('CircuitryLib', 'Необходимо выбрать адаптер для обработки устройства.');
+                return;
+            }
+            var adaptersRec = adaptersCombobox.findRecordByValue(adaptersCombobox.value),
+                devicesRec = indexPanel.getSelectionModel().getSelection()[0],
+                currentDeviceSettings = deviceSettings[devicesRec.get('fullclassname')],
+                contenttype = adaptersRec.get('contenttype');
+
+            if (!currentDeviceSettings) {
+                Ext.MessageBox.alert('CircuitryLib', 'Необходимо настроить сигналы устройства.');
+                return;
+            }
+
+            var getItems = {
+                device_libname: devicesRec.get('libname'),
+                device_classname: devicesRec.get('classname'),
+                adapter_libname: adaptersRec.get('libname'),
+                adapter_classname: adaptersRec.get('classname')
+            };
+
+            for (var signals_value in currentDeviceSettings) {
+                if (currentDeviceSettings.hasOwnProperty(signals_value)) {
+                    getItems[signals_value] = currentDeviceSettings[signals_value];
+                }
+            }
+
+            var showResultWindow = function(contenttype, value) {
+                var windowProperties = {
+                    title : 'CircuitryLib',
+                    width : 600,
+                    height: 400,
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch',
+                        padding: 10
+                    }
+                };
+                windowProperties['items'] = [
+                    {
+                        xtype: 'label',
+                        text: 'Результат обработки:',
+                        margin: '0 0 5 0'
+                    },
+                ];
+                if (contenttype == 'text/plain') {
+                    windowProperties['items'].push({
+                        xtype: 'textarea',
+                        value: value,
+                        flex: 1
+                    });
+                } else if (contenttype == 'image/png') {
+                    windowProperties['items'].push({
+                        xtype: 'image',
+                        src: value,
+                        flex: 1
+                    })
+                }
+                var resultWindow = Ext.create("Ext.Window", windowProperties).show();
+            };
+
+            var queryAddressList = [],
+                queryAddress = '/handle?';
+            for (var item in getItems) {
+                if (getItems.hasOwnProperty(item)) {
+                    queryAddressList.push(encodeURIComponent(item) + '=' + encodeURIComponent(getItems[item]));
+                }
+            }
+            queryAddress += queryAddressList.join('&');
+
+            if (contenttype == 'text/plain') {
+                Ext.Ajax.request({
+                   url: queryAddress,
+                   method: 'GET',
+                   extraParams: getItems,
+                   success: function(response, opts) {
+                      showResultWindow(contenttype, response.responseText);
+                   },
+                   failure: function(response, opts) {
+                      Ext.MessageBox.alert('CircuitryLib', 'Произошла ошибка при обработке данных.');
+                   }
+                });
+            } else if (contenttype == 'image/png') {
+                showResultWindow(contenttype, queryAddress);
+            }
         }
     });
 
