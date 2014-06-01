@@ -54,7 +54,7 @@ def handle():
                 got_signal = request.args.get(signal)
                 if got_signal:
                     signals_dict[signal] = {
-                        'signals_letter': signal[0],
+                        'signals_letter': signal[0] if signal != 'strobe_signals' else 'z',
                         'signals_count': int(got_signal)
                     }
                     signals_str_dict[signal] = '%(signals_letter)s:%(signals_count)d' % signals_dict[signal]

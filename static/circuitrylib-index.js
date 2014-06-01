@@ -133,7 +133,7 @@ Ext.onReady(function () {
                 currentDeviceSettings = deviceSettings[devicesRec.get('fullclassname')],
                 contenttype = adaptersRec.get('contenttype');
 
-            if (!currentDeviceSettings) {
+            if (!currentDeviceSettings || !currentDeviceSettings.output_signals) {
                 Ext.MessageBox.alert('CircuitryLib', 'Необходимо настроить сигналы устройства.');
                 return;
             }
