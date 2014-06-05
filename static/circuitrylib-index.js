@@ -245,7 +245,7 @@ Ext.onReady(function () {
             },
             {
                 text: 'Описание устройства',
-                dataIndex: 'docstring',
+                dataIndex: 'docstring_localized',
                 flex: 3
             }
         ],

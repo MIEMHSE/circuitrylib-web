@@ -9,6 +9,7 @@ Ext.onReady(function () {
     // CircuitryLib model
     Ext.define('circuitrylibModel', {
         extend: 'Ext.data.Model',
+        requires: ['CircuitryLib.Functions'],
         fields: [
             {
                 name: 'libname',
@@ -28,6 +29,12 @@ Ext.onReady(function () {
                 name: 'docstring',
                 type: 'string',
                 mapping: 'info.__doc__'
+            },
+            {
+                name: 'docstring_localized',
+                convert : function (v, rec) {
+                    return CircuitryLib.Functions.localize(rec.get('docstring'));
+                }
             },
             {
                 name: 'signals',
